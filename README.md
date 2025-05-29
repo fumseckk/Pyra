@@ -16,7 +16,7 @@ Let us consider the following fragment. The code represents a simple data scienc
 ```
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn import StandardScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 
@@ -77,7 +77,7 @@ To analyze a specific Python program run:
 
    | Linux or Mac OS X                            |
    | ---------------------------------------------|
-   | `./<env>/bin/pyra --analysis type-datasciencetest.py` | 
+   | `./<env>/bin/pyra --analysis type-datascience test.py` | 
 
    
 After the analysis, Pyra generates a PDF file showing the control flow graph of the program
