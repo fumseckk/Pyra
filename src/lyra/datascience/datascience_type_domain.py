@@ -231,107 +231,12 @@ class DatascienceTypeLattice(BottomMixin, ArithmeticMixin, SequenceMixin, JSONMi
 
     @staticmethod
     def from_json(json: str) -> 'JSONMixin':
-        if json == '⊥':
+        if hasattr(DatascienceTypeLattice.Status, json):
+            return getattr(DatascienceTypeLattice.Status, json)
+        elif json == '⊥':
             return DatascienceTypeLattice().bottom()
-        if json == 'Boolean':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Boolean)
-        elif json == 'Numeric':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Numeric)
-        elif json == 'String':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.String)
-        elif json == 'RatioSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.RatioSeries)
-        elif json == 'DataFrame':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.DataFrame)
-        elif json == 'DataFrameFromPCA':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.DataFrameFromPCA)
-        elif json == 'Series':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Series)
-        elif json == 'StringSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.StringSeries)
-        elif json == 'NumericSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.NumericSeries)
-        elif json == 'ExpSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.ExpSeries)
-        elif json == 'StdSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.StdSeries)
-        elif json == 'NormSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.NormSeries)
-        elif json == 'CatSeries':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.CatSeries)
-        elif json == 'Array':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Array)
-        elif json == 'BoolArray':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.BoolArray)
-        elif json == 'StringArray':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.StringArray)
-        elif json == 'NumericArray':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.NumericArray)
-        elif json == 'List':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.List)
-        elif json == 'BoolList':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.BoolList)
-        elif json == 'StringList':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.StringList)
-        elif json == 'NumericList':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.NumericList)
-        elif json == 'Tuple':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Tuple)
-        elif json == 'Dict':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Dict)
-        elif json == 'Set':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Set)
-        elif json == 'MaxAbsScaler':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.MaxAbsScaler)
-        elif json == 'MinMaxScaler':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.MinMaxScaler)
-        elif json == 'StandardScaler':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.StandardScaler)
-        elif json == 'KBinsDiscretizer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.KBinsDiscretizer)
-        elif json == 'MultiLabelBinarizer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.MultiLabelBinarizer)
-        elif json == 'TargetEncoder':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.TargetEncoder)
-        elif json == 'OrdinalEncoder':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.OrdinalEncoder)
-        elif json == 'Binarizer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Binarizer)
-        elif json == 'OneHotEncoder':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.OneHotEncoder)
-        elif json == 'LabelEncoder':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.LabelEncoder)
-        elif json == 'FunctionTransformer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.FunctionTransformer)
-        elif json == 'KernelCenterer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.KernelCenterer)
-        elif json == 'Normalizer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Normalizer)
-        elif json == 'PolynomialFeatures':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.PolynomialFeatures)
-        elif json == 'PowerTransformer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.PowerTransformer)
-        elif json == 'QuantileTransformer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.QuantileTransformer)
-        elif json == 'RobustScaler':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.RobustScaler)
-        elif json == 'SplineTransformer':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.SplineTransformer)
-        elif json == 'Scaled':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Scaled)
-        elif json == 'Tensor':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Tensor)
-        elif json == 'SplittedTestData':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.SplittedTestData)
-        elif json == 'SplittedTrainData':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.SplittedTrainData)
-        elif json == ('FeatureSelector'):
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.FeatureSelector)
-        elif json == 'FeatureSelected':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.FeatureSelected)
-        elif json == 'Top':
-            return DatascienceTypeLattice(DatascienceTypeLattice.Status.Top)
-        return DatascienceTypeLattice()
+        else:
+            return DatascienceTypeLattice()
 
     def top(self):
         return self._replace(DatascienceTypeLattice())
