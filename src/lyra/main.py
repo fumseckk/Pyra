@@ -3,6 +3,7 @@ Lyra Static Program Analyzer
 ============================
 """
 
+import os.path
 import argparse
 from lyra.engine.liveness.liveness_analysis import StrongLivenessAnalysis
 from lyra.engine.numerical.interval_analysis import ForwardIntervalAnalysisWithSummarization
@@ -33,6 +34,11 @@ def main():
         '--annotate',
         help='use the results of the ForwardDatascienceTypeAnalysis to annotate the code',
         action='store_true')
+    parser.add_argument(
+        '--custom-semantics',
+        help='Provide a custom .sem file for additionnal custom semantics',
+        default=None
+    )
     args = parser.parse_args()
     config.args = args
 
@@ -50,11 +56,15 @@ def main():
         # The value of the warning level has to be either 'potential' or 'plausible'
         if args.warning_level not in ['potential', 'plausible']:
             raise ValueError('Warning level must be either potential or plausible')
-        result = ForwardDatascienceTypeAnalysis(args.warning_level).main(args.python_file)
+        # If given, the path to custom semantics has to be a file path
+        if (args.custom_semantics is not None) and (not os.path.isfile(args.custom_semantics)):
+            raise ValueError(f"The given custom semantics file path '{args.custom_semantics}' does not exist")
+        result = ForwardDatascienceTypeAnalysis(args.warning_level, args.custom_semantics).main(args.python_file)
         if(args.annotate):
             annotated_code = annotate(result, args.python_file)
     if args.analysis == 'type-vanilla':
         ForwardTypeAnalysis().main(args.python_file)
+
 
 if __name__ == '__main__':
     main()

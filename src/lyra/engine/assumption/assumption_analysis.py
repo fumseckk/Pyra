@@ -4,6 +4,7 @@ Assumption Analysis
 
 :Author: Caterina Urban and Madelin Schumacher
 """
+from typing import Optional
 from lyra.abstract_domains.assumption.alphabet_domain import AlphabetState
 from lyra.abstract_domains.assumption.assumption_domain import TypeRangeAssumptionState, \
     TypeAlphabetAssumptionState, TypeRangeAlphabetAssumptionState, TypeQuantityAssumptionState, \
@@ -26,12 +27,15 @@ from lyra.semantics.datascience_type_semantics import DatascienceTypeSemantics
 
 class ForwardDatascienceTypeAnalysis(Runner):
 
-    def __init__(self, warning_level):
+    def __init__(self, warning_level, custom_sem_path: Optional[str] = None):
         super().__init__()
         self.warning_level = warning_level
+        self.sem = DatascienceTypeSemantics()
+        if (custom_sem_path is not None):
+            self.sem._generate_class_methods(custom_sem_path)
 
     def interpreter(self):
-        return ForwardInterpreter(self.cfgs, self.fargs, DatascienceTypeSemantics(), 3, warning_level=self.warning_level)
+        return ForwardInterpreter(self.cfgs, self.fargs, self.sem, 3, warning_level=self.warning_level)
 
     def state(self):
         return DatascienceTypeState(self.variables)
