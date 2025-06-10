@@ -54,7 +54,7 @@ import lyra.semantics.utilities as utilities
 from lyra.semantics.utilities import SelfUtilitiesSemantics
 from lyra.semantics.semantics import camel_to_snake
 from lyra.semantics.numpy_datascience_type_semantics import NumPyDatascienceTypeSemantics
-from lyra.generate_semantics.dynamic_sem_transpiler import CustomSemantics
+from lyra.semantics.generate_semantics.dynamic_sem_transpiler import CustomSemantics
 
 from lyra.core.types import TopLyraType
 

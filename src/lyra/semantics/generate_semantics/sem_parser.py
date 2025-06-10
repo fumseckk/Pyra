@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from typing import List, Optional, Dict
-from lyra.generate_semantics.sem_ast import FunctionSignature, Parameter, TypePredicate
+from lyra.semantics.generate_semantics.sem_ast import FunctionSignature, TypePredicate
 
 
 class SemanticsParser:
@@ -38,7 +38,7 @@ class SemanticsParser:
             return None
             
         input_part = parts[0].strip()
-        output_part = parts[1].strip()
+        return_type = parts[1].strip()
         
         # Check if there are conditions using 'when'
         input_parts = input_part.split('when')
@@ -53,7 +53,7 @@ class SemanticsParser:
                 function_name=function_part,
                 parameters=[],
                 conditions=[],
-                return_type=output_part
+                return_type=return_type
             )
         
         # Parse function with parameters
@@ -66,29 +66,27 @@ class SemanticsParser:
             for param in params_str.split(','):
                 param = param.strip()
                 if param:
-                    parameters.append(Parameter(name=param))
+                    parameters.append(param)
+                else:
+                    raise ValueError("Syntax error : Empty parameter")
         
         # Parse the conditions
         conditions = []
         if conditions_part:
             for condition in conditions_part.split(','):
                 condition = condition.strip()
-                pred_match = re.match(r'is_(\w+)\((\w+)\)', condition)
+                pred_match = re.match(r'([a-zA-Z_]\w*)\((.*)\)', condition)
                 if pred_match:
-                    predicate_type = pred_match.group(1)
-                    arg = pred_match.group(2)
+                    predicate_name = pred_match.group(1)
+                    args_str = pred_match.group(2)
+                    args = [arg.strip() for arg in args_str.split(',') if arg.strip()]
                     predicate = TypePredicate(
-                        function_name=f"is_{predicate_type}",
-                        args=[arg]
+                    function_name=predicate_name,
+                    args=args
                     )
                     conditions.append(predicate)
         
         # Parse special return types like typeof()
-        output_match = re.match(r'typeof\((\w+)\)', output_part)
-        if output_match:
-            return_type = f"typeof({output_match.group(1)})"
-        else:
-            return_type = output_part
         
         return FunctionSignature(
             function_name=function_name,
@@ -100,11 +98,11 @@ class SemanticsParser:
 if __name__ == "__main__":
     # Example usage
     parser = SemanticsParser()
-    file_path = "/home/phoenix/prog/ens/stage/pyra/src/lyra/generate_semantics/testing/pandas.sem"
+    file_path = "/home/phoenix/prog/ens/stage/pyra/custom_semantics/custom1.sem"
     signatures = parser.parse_file(file_path)
     print(signatures)
     for sig in signatures:
-        param_str = ", ".join(p.name for p in sig.parameters)
+        param_str = ", ".join(sig.parameters)
         function_call = f"{sig.function_name}({param_str})"
         
         if sig.conditions:

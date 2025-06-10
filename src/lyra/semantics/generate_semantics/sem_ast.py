@@ -9,15 +9,9 @@ class TypePredicate:
 
 
 @dataclass
-class Parameter:
-    """A function parameter."""
-    name: str
-
-
-@dataclass
 class FunctionSignature:
     """A function signature with input parameters, type conditions, and return type."""
     function_name: str
-    parameters: List[Parameter]
+    parameters: List[str]
     conditions: List[TypePredicate]
     return_type: str
