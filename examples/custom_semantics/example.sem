@@ -1,0 +1,1 @@
+custom_normalize(a) when is_Series(a) -> NormSeries
