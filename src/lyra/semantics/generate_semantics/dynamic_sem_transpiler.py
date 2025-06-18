@@ -68,7 +68,7 @@ class DynamicSemanticsGenerator:
                 elif not hasattr(utilities, condition.function_name):
                     raise ValueError(f"[Custom semantics error] The condition function {condition.function_name} does not exist in module `utilities`.")
                 for condition_arg in condition.args:
-                    if not condition.args in sig.parameters:
+                    if not condition_arg in sig.parameters:
                         raise ValueError(f"[Custom semantics error] Unknown variable '{condition_arg}' in condition for function {func_name}.")
 
             # Check params duplicates
