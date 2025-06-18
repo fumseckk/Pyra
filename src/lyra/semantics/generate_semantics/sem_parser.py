@@ -73,20 +73,24 @@ class SemanticsParser:
         # Parse the conditions
         conditions = []
         if conditions_part:
-            for condition in conditions_part.split(','):
-                condition = condition.strip()
-                pred_match = re.match(r'([a-zA-Z_]\w*)\((.*)\)', condition)
-                if pred_match:
-                    predicate_name = pred_match.group(1)
-                    args_str = pred_match.group(2)
-                    args = [arg.strip() for arg in args_str.split(',') if arg.strip()]
-                    predicate = TypePredicate(
-                    function_name=predicate_name,
-                    args=args
-                    )
-                    conditions.append(predicate)
-        
-        # Parse special return types like typeof()
+            for condition in conditions_part.split('and'):
+                if ('==' in condition):
+                    args = [side.strip() for side in condition.split("==")]
+                    if len(args) == 2:
+                        predicate = TypePredicate(function_name='__eq__', args=args)
+                        conditions.append(predicate)
+                    else:
+                        raise ValueError(f"Condition '{condition}' incorrect: expected either a function call or a 2-side equality '=='.")
+                else:        
+                    pred_match = re.match(r'([a-zA-Z_]\w*)\((.*)\)', condition)
+                    if pred_match:
+                        predicate_name = pred_match.group(1)
+                        args_str = pred_match.group(2)
+                        args = [arg.strip() for arg in args_str.split(',') if arg.strip()]
+                        predicate = TypePredicate(function_name=predicate_name, args=args)
+                        conditions.append(predicate)
+                    else:
+                        raise ValueError(f"Condition '{condition}' incorrect: expected either a function call or a 2-sided equality '=='.")
         
         return FunctionSignature(
             function_name=function_name,
@@ -96,9 +100,9 @@ class SemanticsParser:
         )
     
 if __name__ == "__main__":
-    # Example usage
+    # Test
     parser = SemanticsParser()
-    file_path = "/home/phoenix/prog/ens/stage/pyra/custom_semantics/custom1.sem"
+    file_path = "/home/phoenix/prog/ens/stage/pyra/examples/custom_semantics/example.sem"
     signatures = parser.parse_file(file_path)
     print(signatures)
     for sig in signatures:

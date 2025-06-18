@@ -52,24 +52,33 @@ class DynamicSemanticsGenerator:
         for sig in signatures:
             # Check return type
             if not hasattr(DatascienceTypeLattice.Status, sig.return_type):
-                raise ValueError(f"Unknown return type '{sig.return_type}' for function {func_name}.")
+                raise ValueError(f"[Custom semantics error] Unknown return type '{sig.return_type}' for function {func_name}.")
             
             # Check condition arguments
             for condition in sig.conditions:
+                if (condition.function_name == "__eq__"):
+                    raise ValueError("[Custom semantics error] Not implemented")
+                elif (condition.function_name == 'isinstance'):
+                    if not len(condition.args) == 2:
+                        raise ValueError(f"[Custom semantics error] Expected 2 arguments for condition '{condition}', got {len(condition.args)} instead.")
+                    if not hasattr(DatascienceTypeLattice.Status, condition.args[1]):
+                        raise ValueError(f"[Custom semantics error] Second argument for condition '{condition}' in 'isinstance' call is not a recognized datascience type.")
+                    if not condition.args[0] in sig.parameters:
+                        raise ValueError(f"[Custom semantics error] Unknown variable '{condition.args[0]}' in condition for function '{func_name}'.")
+                elif not hasattr(utilities, condition.function_name):
+                    raise ValueError(f"[Custom semantics error] The condition function {condition.function_name} does not exist in module `utilities`.")
                 for condition_arg in condition.args:
-                    if not condition_arg in sig.parameters:
-                        raise ValueError(f"Unknown variable '{condition_arg}' in condition for function {func_name}.")
+                    if not condition.args in sig.parameters:
+                        raise ValueError(f"[Custom semantics error] Unknown variable '{condition_arg}' in condition for function {func_name}.")
 
             # Check params duplicates
             duplicates = [var for var in set(sig.parameters) if sig.parameters.count(var) > 1]
             if (duplicates):
-                raise ValueError(f"Duplicate parameter '{duplicates[0]}' for function {func_name}.")
+                raise ValueError(f"[Custom semantics error] Duplicate parameter '{duplicates[0]}' for function {func_name}.")
 
     def generate_function_semantics(self, func_name: str, signatures: List[FunctionSignature]) -> Callable:
         """Generate semantics for a function based on given signatures"""
 
-        # TODO maybe we should filter depending on the number of arguments the function receives ?
-        
         def to_return(self, stmt, state, interpreter):
             # Eval all arguments
             args = list(map(lambda arg: list(self.semantics(arg, state, interpreter).result)[0], stmt.arguments))
@@ -78,19 +87,17 @@ class DynamicSemanticsGenerator:
                 # If there is no condition, skip the for loop
                 conditions_met = True
                 for condition in sig.conditions:
-                    # TODO test if this is useful
                     import lyra.semantics.utilities as utilities
-                    
-                    # TODO This only allows utilities.function(state, arg) condition guards
-                    # Should be able to eval arbitrary code.
-                    # TODO put error if function does not exist
-                    # TODO This only allows for single-argument calls.
+
                     condition_arg = condition.args[0]
                     index = sig.parameters.index(condition_arg)
                     arg_var = args[index]
-                    if not hasattr(utilities, condition.function_name):
-                        raise ValueError("TODO")
-                    if not getattr(utilities, condition.function_name)(state, arg_var):
+
+                    if (condition.function_name == 'isinstance'):
+                        if not isinstance(arg_var, getattr(DatascienceTypeLattice.Status, condition.args[1])):
+                            conditions_met = False
+                            break
+                    elif not getattr(utilities, condition.function_name)(state, arg_var):
                         conditions_met = False
                         break
                 
