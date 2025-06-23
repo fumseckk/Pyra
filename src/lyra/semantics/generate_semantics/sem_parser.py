@@ -2,7 +2,8 @@ import re
 from dataclasses import dataclass
 from typing import List, Optional, Dict
 from lyra.semantics.generate_semantics.sem_ast import FunctionSignature, TypePredicate
-
+import sys
+import os
 
 class SemanticsParser:
     """Parser for semantic rule files (.sem)."""
@@ -102,8 +103,13 @@ class SemanticsParser:
 if __name__ == "__main__":
     # Test
     parser = SemanticsParser()
-    file_path = "/home/phoenix/prog/ens/stage/pyra/examples/custom_semantics/example.sem"
-    signatures = parser.parse_file(file_path)
+    if len(sys.argv) > 1:
+        sem_path = sys.argv[1]
+    else:
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        sem_path = os.path.normpath(os.path.join(file_dir, "../../../../examples/custom_semantics/example.sem"))
+        print("No file path provided as command line argument. Using default: ", sem_path)
+    signatures = parser.parse_file(sem_path)
     print(signatures)
     for sig in signatures:
         param_str = ", ".join(sig.parameters)

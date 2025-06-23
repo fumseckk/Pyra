@@ -1,4 +1,6 @@
 import types
+import os
+import sys
 import inspect
 from typing import List, Dict, Callable, Any
 from collections import defaultdict
@@ -111,9 +113,15 @@ class DynamicSemanticsGenerator:
 
 
 if __name__ == "__main__":
-    sem_file_path = "../../../custom_semantics/custom1.sem"
+    if len(sys.argv) > 1:
+        sem_path = sys.argv[1]
+    else:
+        file_dir = os.path.dirname(os.path.realpath(__file__))
+        sem_path = os.path.normpath(os.path.join(file_dir, "../../../../examples/custom_semantics/example.sem"))
+        print("No file path provided as command line argument. Using default: ", sem_path)
+    
     sem = CustomSemantics()
-    sem._generate_class_methods(sem_file_path)
+    sem._generate_class_methods(sem_path)
     
     print(f"Generated class: {sem.__class__.__name__}")
     print("Methods:")
