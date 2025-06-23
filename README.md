@@ -82,3 +82,25 @@ To analyze a specific Python program run:
    
 After the analysis, Pyra generates a PDF file showing the control flow graph of the program
 annotated with the result of the abstract data type analysis before and after each statement in the program. 
+
+### Using custom function semantics
+
+It is possible to define custom function semantics for the analyzer.
+This is useful when the analysis is too coarse and the function call results in `Top`, while the developer
+knows what type it returns, or what statistics operation the function is doing.
+
+The semantics are created in a separate file with a `.sem` extension. If a function returns a different type depending on its arguments, it is possible to write multiple lines in a row for the same function with a `when` guard condition, defaulting (when no case is matched) with `Top` as a result (TODO Should definitely default to a normal analysis instead). The lines are executed in order of appearance in the `.sem` file. The conditions are either functions found in the `utility.py` file (in particular here taking a single argument to test if a parameter belongs to a certain category), or a call to `isinstance(var, type)` to test if a parameter is of a specific type.
+Usage example :
+
+```prolog
+foo(a, b) when is_Scaler(a) and is_Numeric(b) -> Series
+foo(a, b) when is_Series(b) -> None
+foo(a, b) when isinstance(a, Numeric) -> None
+foo(a, b) -> Numeric
+
+bar(_) -> NormSeries
+```
+
+To use custom semantics, Pyra should be run with a supplementary parameter `--custom-semantics bar.sem` that links to the semantics file that will be used during the analysis.
+
+Note that it is even possible to override the semantics of known library functions for specific use cases.
